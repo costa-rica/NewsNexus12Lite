@@ -1,6 +1,6 @@
 import type { StageName } from "@/types";
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8010";
 export const SNAPSHOT_INTERVAL_MS = Number.parseInt(
   process.env.NEXT_PUBLIC_SNAPSHOT_INTERVAL_MS ?? "5000",
   10

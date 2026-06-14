@@ -2,7 +2,7 @@ import { createApp } from "./app";
 import { syncModels } from "./models/sync";
 import { loadDefaultPrompts } from "./services/defaultPrompts";
 
-const defaultPort = 4000;
+const defaultPort = 8010;
 const port = Number.parseInt(process.env.PORT ?? String(defaultPort), 10);
 const app = createApp();
 

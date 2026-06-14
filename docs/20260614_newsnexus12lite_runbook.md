@@ -92,7 +92,7 @@ Use a passwordless Lite connection string in `api/.env`: `postgres://newsnexus12
 Copy `api/.env.example` to `api/.env` and fill in Lite-only values:
 
 ```sh
-PORT=4000
+PORT=8010
 DATABASE_URL=postgres://newsnexus12lite_user@localhost:5432/newsnexus12lite
 PIPELINE_MODE=mock
 AI_API_KEY=
@@ -108,7 +108,7 @@ Leave `AI_API_KEY` empty in mock mode. In live mode, set it to a real key locall
 Copy `portal/.env.local.example` to `portal/.env.local`:
 
 ```sh
-NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8010
 NEXT_PUBLIC_SNAPSHOT_INTERVAL_MS=5000
 ```
 
@@ -156,11 +156,11 @@ From `api/`:
 npm run dev
 ```
 
-The backend listens on `http://localhost:4000` by default. Use `PIPELINE_MODE=mock` for local demo runs without AI credentials.
+The backend listens on `http://localhost:8010` by default. Use `PIPELINE_MODE=mock` for local demo runs without AI credentials.
 
 ## 10. Start the Frontend
 
-The Lite portal is assigned to port `4001`. Install portal dependencies, then run the dev server:
+The Lite portal is assigned to port `8011`. Install portal dependencies, then run the dev server:
 
 ```sh
 cd portal
@@ -168,7 +168,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:4001`. The first-launch modal should appear on a fresh browser session.
+Open `http://localhost:8011`. The first-launch modal should appear on a fresh browser session.
 
 ## 11. Verify the Backend
 
@@ -183,8 +183,8 @@ npm test
 Basic API checks:
 
 ```sh
-curl -i http://localhost:4000/health
-curl -i -X POST http://localhost:4000/api/rss/search \
+curl -i http://localhost:8010/health
+curl -i -X POST http://localhost:8010/api/rss/search \
   -H 'Content-Type: application/json' \
   -d '{"query":"chemical spill texas"}'
 ```
