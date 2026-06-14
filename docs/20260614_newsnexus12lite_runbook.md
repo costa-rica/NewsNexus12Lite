@@ -51,11 +51,26 @@ Find the active `pg_hba.conf` path:
 sudo -u postgres psql -c 'SHOW hba_file;'
 ```
 
-Edit that file with sudo and make sure local IPv4 and IPv6 host connections use `trust` before any broader `scram-sha-256` or `md5` host rule that would also match localhost:
+Edit that file with sudo. Put the localhost `host` rules in the existing IPv4/IPv6 local connections section near the end of `pg_hba.conf`, before any broader `scram-sha-256` or `md5` host rule that would also match localhost. Do not add a duplicate IPv4 line if `127.0.0.1/32` already uses `trust`.
+
+If the file already shows the IPv4 localhost line as `trust`, only change the existing IPv6 localhost line from `scram-sha-256` to `trust`:
+
+Before:
 
 ```conf
-host    all    all    127.0.0.1/32    trust
-host    all    all    ::1/128         trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 scram-sha-256
+```
+
+After:
+
+```conf
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
 ```
 
 Reload Postgres after saving the file:
