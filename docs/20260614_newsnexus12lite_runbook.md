@@ -15,7 +15,21 @@ Allowed overlap is one-time copying only: prompt text or fixture content may be 
 
 ## 2. Create the Lite Postgres Database
 
-Create a separate database, user, and schema for Lite. Example placeholders:
+Create a separate database, user, and schema for Lite. First open a Postgres administrator terminal, then run the SQL commands below.
+
+On a Linux server where you have sudo access to the local Postgres service, open `psql` as the `postgres` system user:
+
+```sh
+sudo -u postgres psql
+```
+
+If Postgres is hosted elsewhere or requires TCP/password auth, connect with the admin role your host provides instead:
+
+```sh
+psql -h <postgres-host> -p 5432 -U <postgres-admin-user> -d postgres
+```
+
+After the `postgres=#` prompt appears, execute these SQL commands with placeholder values replaced locally:
 
 ```sql
 CREATE DATABASE newsnexus12lite;
@@ -25,6 +39,8 @@ GRANT ALL PRIVILEGES ON DATABASE newsnexus12lite TO newsnexus12lite_user;
 CREATE SCHEMA IF NOT EXISTS public AUTHORIZATION newsnexus12lite_user;
 GRANT ALL ON SCHEMA public TO newsnexus12lite_user;
 ```
+
+When finished, exit the Postgres terminal with `\q`.
 
 Use a separate read-only NewsNexus12 role only for the optional copy script. Never reuse a write-capable NewsNexus12 credential. If your Postgres host requires a non-`public` schema, add it to the Lite `DATABASE_URL` connection options and keep it Lite-owned.
 
