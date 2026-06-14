@@ -4,9 +4,9 @@
   "private": true,
   "description": "Next.js portal for NewsNexus12Lite",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4001",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 4001",
     "lint": "eslint . --max-warnings=0",
     "type-check": "tsc --noEmit",
     "test": "jest --passWithNoTests"

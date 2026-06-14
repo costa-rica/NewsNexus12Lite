@@ -160,7 +160,7 @@ The backend listens on `http://localhost:4000` by default. Use `PIPELINE_MODE=mo
 
 ## 10. Start the Frontend
 
-Install portal dependencies, then run the dev server:
+The Lite portal is assigned to port `4001`. Install portal dependencies, then run the dev server:
 
 ```sh
 cd portal
@@ -168,7 +168,7 @@ npm install
 npm run dev
 ```
 
-Open the printed Next.js URL. The first-launch modal should appear on a fresh browser session.
+Open `http://localhost:4001`. The first-launch modal should appear on a fresh browser session.
 
 ## 11. Verify the Backend
 
