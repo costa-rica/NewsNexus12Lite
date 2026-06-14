@@ -4,7 +4,7 @@ const nodeEnv = process.env.NODE_ENV ?? "development";
 const databaseUrl =
   process.env.DATABASE_URL ??
   (nodeEnv === "test"
-    ? "postgres://user:password@localhost:5432/newsnexus12lite_test"
+    ? "postgres://newsnexus12lite_user@localhost:5432/newsnexus12lite_test"
     : undefined);
 
 if (!databaseUrl) {
