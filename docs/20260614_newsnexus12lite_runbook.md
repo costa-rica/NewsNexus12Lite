@@ -17,24 +17,27 @@ Allowed overlap is one-time copying only: prompt text or fixture content may be 
 
 Create a separate database, login role, and schema for Lite. Do not assign a password to the Lite database role; local passwordless access is enabled in the next section through Postgres `trust` authentication for localhost only.
 
-Open a Postgres administrator terminal on the server:
+Run the database and role setup from a normal shell prompt:
 
 ```sh
-sudo -u postgres psql
-```
-
-After the `postgres=#` prompt appears, execute these SQL commands:
-
-```sql
+sudo -u postgres psql <<'SQL'
 CREATE DATABASE newsnexus12lite;
 CREATE ROLE newsnexus12lite_user WITH LOGIN;
 GRANT ALL PRIVILEGES ON DATABASE newsnexus12lite TO newsnexus12lite_user;
-\c newsnexus12lite
-CREATE SCHEMA IF NOT EXISTS public AUTHORIZATION newsnexus12lite_user;
-GRANT ALL ON SCHEMA public TO newsnexus12lite_user;
+SQL
 ```
 
-When finished, exit the Postgres terminal with `\q`.
+Then run the schema setup in a separate `psql` invocation connected directly to the Lite database. If your first attempt already created the database and role, start here instead of rerunning the first block:
+
+```sh
+sudo -u postgres psql -d newsnexus12lite <<'SQL'
+CREATE SCHEMA IF NOT EXISTS public;
+ALTER SCHEMA public OWNER TO newsnexus12lite_user;
+GRANT ALL ON SCHEMA public TO newsnexus12lite_user;
+SQL
+```
+
+If you choose to use an interactive `sudo -u postgres psql` session instead, run `\c newsnexus12lite` or `\connect newsnexus12lite` alone on its own line before running the schema commands. Do not paste a `\c` or `\connect` meta-command on the same line as SQL.
 
 Use a separate read-only NewsNexus12 role only for the optional copy script. Never reuse a write-capable NewsNexus12 credential. If your Postgres host requires a non-`public` schema, add it to the Lite `DATABASE_URL` connection options and keep it Lite-owned.
 
