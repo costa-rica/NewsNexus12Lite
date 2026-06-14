@@ -48,6 +48,10 @@ function publicRun(run: PipelineRun) {
   };
 }
 
+function defaultPipelineMode(): "mock" | "live" {
+  return process.env.PIPELINE_MODE === "live" ? "live" : "mock";
+}
+
 orchestrationRouter.post("/runs", (req, res) => {
   if ("stages" in (req.body ?? {}) || "useSessionPrompts" in (req.body ?? {})) {
     res.status(400).json({ result: false, error: "Lite runs use the fixed stage sequence and per-stage prompt capture." });
@@ -67,7 +71,7 @@ orchestrationRouter.post("/runs", (req, res) => {
     res.status(400).json({ result: false, error: "One or more article IDs are unknown for this session." });
     return;
   }
-  const mode = req.body?.mode === "live" ? "live" : "mock";
+  const mode = req.body?.mode === "live" || req.body?.mode === "mock" ? req.body.mode : defaultPipelineMode();
   if (mode === "live" && !process.env.AI_API_KEY) {
     res.status(400).json({ result: false, error: "AI_API_KEY is required when mode is live." });
     return;

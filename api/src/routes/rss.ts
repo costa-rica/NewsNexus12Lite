@@ -9,6 +9,10 @@ import type { Article } from "../types";
 
 export const rssRouter = Router();
 
+const DEFAULT_ARTICLE_LIMIT_GOOGLE_RSS_SEARCH = 10;
+const MIN_ARTICLE_LIMIT_GOOGLE_RSS_SEARCH = 1;
+const MAX_ARTICLE_LIMIT_GOOGLE_RSS_SEARCH = 10;
+
 const FALLBACK_FIXTURES = [
   ["Chemical plume prompts shelter in place", "Demo Wire", "Officials issued a shelter-in-place order after a chemical release near a Texas plant."],
   ["Wildfire evacuation expands", "Demo Local", "Crews expanded evacuation zones as a wildfire moved toward homes in California."],
@@ -21,38 +25,55 @@ function mode(): "mock" | "live" {
   return process.env.PIPELINE_MODE === "live" ? "live" : "mock";
 }
 
-async function mockArticles(): Promise<Article[]> {
+function googleRssSearchArticleLimit(): number {
+  const parsed = Number.parseInt(process.env.ARTICLE_LIMIT_GOOGLE_RSS_SEARCH ?? "", 10);
+  if (!Number.isFinite(parsed)) {
+    return DEFAULT_ARTICLE_LIMIT_GOOGLE_RSS_SEARCH;
+  }
+  return Math.min(
+    MAX_ARTICLE_LIMIT_GOOGLE_RSS_SEARCH,
+    Math.max(MIN_ARTICLE_LIMIT_GOOGLE_RSS_SEARCH, parsed)
+  );
+}
+
+async function mockArticles(limit: number): Promise<{ articles: Article[]; truncated: boolean }> {
   try {
-    const fixtures = await ArticleFixture.findAll({ limit: 10, order: [["createdAt", "ASC"]] });
-    if (fixtures.length > 0) {
-      return fixtures.map((fixture) =>
-        normalizeArticle({
-          id: fixture.id,
-          title: fixture.title,
-          source: fixture.source,
-          description: fixture.description,
-          url: fixture.url,
-          publishedAt: fixture.publishedAt
-        })
-      );
+    const fixtures = await ArticleFixture.findAndCountAll({ limit, order: [["createdAt", "ASC"]] });
+    if (fixtures.rows.length > 0) {
+      return {
+        articles: fixtures.rows.map((fixture) =>
+          normalizeArticle({
+            id: fixture.id,
+            title: fixture.title,
+            source: fixture.source,
+            description: fixture.description,
+            url: fixture.url,
+            publishedAt: fixture.publishedAt
+          })
+        ),
+        truncated: fixtures.count > limit
+      };
     }
   } catch {
     // Fall through to hard-coded fixtures when a local DB is not available.
   }
 
-  return FALLBACK_FIXTURES.map(([title, source, description]) =>
-    normalizeArticle({
-      id: randomUUID(),
-      title,
-      source,
-      description,
-      url: "https://example.com/newsnexus12lite-fixture",
-      publishedAt: new Date().toISOString()
-    })
-  );
+  return {
+    articles: FALLBACK_FIXTURES.slice(0, limit).map(([title, source, description]) =>
+      normalizeArticle({
+        id: randomUUID(),
+        title,
+        source,
+        description,
+        url: "https://example.com/newsnexus12lite-fixture",
+        publishedAt: new Date().toISOString()
+      })
+    ),
+    truncated: FALLBACK_FIXTURES.length > limit
+  };
 }
 
-async function liveArticles(query: string, language = "en-US", region = "US"): Promise<{ articles: Article[]; truncated: boolean }> {
+async function liveArticles(query: string, limit: number, language = "en-US", region = "US"): Promise<{ articles: Article[]; truncated: boolean }> {
   const encodedQuery = encodeURIComponent(query);
   const url = `https://news.google.com/rss/search?q=${encodedQuery}&hl=${language}&gl=${region}&ceid=${region}:${language.split("-")[0]}`;
   const response = await axios.get(url, { timeout: 10000, validateStatus: (status) => status === 200 });
@@ -68,7 +89,7 @@ async function liveArticles(query: string, language = "en-US", region = "US"): P
       publishedAt: item.pubDate?.[0] ? new Date(String(item.pubDate[0])).toISOString() : undefined
     })
   );
-  return { articles: rawArticles.slice(0, 10), truncated: rawArticles.length > 10 };
+  return { articles: rawArticles.slice(0, limit), truncated: rawArticles.length > limit };
 }
 
 rssRouter.post("/search", async (req, res) => {
@@ -79,10 +100,11 @@ rssRouter.post("/search", async (req, res) => {
   }
 
   try {
+    const articleLimit = googleRssSearchArticleLimit();
     const result =
       mode() === "mock"
-        ? { articles: await mockArticles(), truncated: false }
-        : await liveArticles(query, req.body.language, req.body.region);
+        ? await mockArticles(articleLimit)
+        : await liveArticles(query, articleLimit, req.body.language, req.body.region);
     res.locals.session.articles = result.articles;
     res.locals.session.activeRunId = null;
     res.json({ result: true, data: { articles: result.articles, truncated: result.truncated, query } });

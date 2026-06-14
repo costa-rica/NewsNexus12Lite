@@ -1,11 +1,12 @@
 import { Router } from "express";
 
 import { isStageName } from "./orchestration";
+import type { Article } from "../types";
 
 export const articlesRouter = Router();
 
 articlesRouter.get("/:articleId", (req, res) => {
-  const article = res.locals.session.articles.find((item) => item.id === req.params.articleId);
+  const article = res.locals.session.articles.find((item: Article) => item.id === req.params.articleId);
   if (!article) {
     res.status(404).json({ result: false, error: "Article not found." });
     return;
@@ -18,7 +19,7 @@ articlesRouter.get("/:articleId/explanations/:stage", (req, res) => {
     res.status(400).json({ result: false, error: "Invalid stage." });
     return;
   }
-  const article = res.locals.session.articles.find((item) => item.id === req.params.articleId);
+  const article = res.locals.session.articles.find((item: Article) => item.id === req.params.articleId);
   if (!article) {
     res.status(404).json({ result: false, error: "Article not found." });
     return;
