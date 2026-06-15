@@ -18,6 +18,7 @@ look and feel of `NewsNexus12/portal`. Nick: please write your decision under ea
 ## Context (what I inspected)
 
 **Lite portal today** (`NewsNexus12Lite/portal`):
+
 - Next.js 16 / React 19 / Redux Toolkit + redux-persist / Tailwind v4.
 - Styling is **plain CSS** in `src/app/globals.css` using bespoke class names
   (`.shell`, `.toolbar`, `.btn`, `.table-wrap`, `.chip`, `.score-bubble`, …) and
@@ -35,6 +36,7 @@ look and feel of `NewsNexus12/portal`. Nick: please write your decision under ea
 - `@tanstack/react-table` is **not** currently a dependency.
 
 **Reference portal** (`NewsNexus12/portal`, TailAdmin-based):
+
 - Tailwind v4 with a full `@theme` token system in `globals.css` (brand palette
   `--color-brand-*` centered on `#465fff`, plus gray/success/error/warning scales,
   theme shadows, Outfit font).
@@ -73,6 +75,7 @@ visual style) would require backend/API changes that are out of scope for a styl
 task and may conflict with the demo's rate-limit/10-article constraints.
 
 Options:
+
 - **(A) Style only (Recommended):** Keep Lite's single `query` input and existing
   search behavior, but render it in the reference's card/`Label`/`Input`/`Button`
   visual style. No backend change.
@@ -83,7 +86,7 @@ Options:
 
 ### Answer
 
-
+Option A style only, keep single query
 
 ---
 
@@ -92,6 +95,7 @@ Options:
 The reference form fetches candidate articles, lets the user check rows, and then
 "Add to Database". Lite instead loads articles directly into the table and then runs
 the orchestration pipeline (`Reset Demo`, `OrchestrationPanel`). Should the revamp:
+
 - **(A) Preserve Lite's existing behavior (Recommended):** search loads the table
   directly; keep Reset Demo + pipeline run; no row-selection/add-to-db step.
 - **(B) Introduce the reference's select + "Add to Database" interaction** (changes
@@ -99,7 +103,7 @@ the orchestration pipeline (`Reset Demo`, `OrchestrationPanel`). Should the reva
 
 ### Answer
 
-
+Preserve Lite's esisting behavior, no add to database needed.
 
 ---
 
@@ -108,6 +112,7 @@ the orchestration pipeline (`Reset Demo`, `OrchestrationPanel`). Should the reva
 The request says "same sorting and header functions" and "table functionality." The
 reference table includes several features beyond sorting. Which should the Lite table
 include? (Select all that apply.)
+
 - Clickable sortable headers with ▲/▼ indicators — **assumed required** by the
   request.
 - Pagination + page-size selector (5/10/20).
@@ -123,7 +128,14 @@ semantics differ.
 
 ### Answer
 
+Here are my preferences:
 
+- Make sure the "Assigned State" is "AI Assigned State"
+- include sortable headers,
+- global search
+- no pagination + page-size,
+- No column-visibility necessary.
+- No state filter dropdown
 
 ---
 
@@ -133,6 +145,7 @@ Lite rows expand in place (`ArticleExpandedRow`) and score cells open per-stage
 explanations via `ScoreBubble`. The reference table has no expandable rows; it uses
 clickable score cells/buttons that open modals. The request says keep Lite
 **functionality** but adopt the reference **style/table functionality**.
+
 - **(A) Keep Lite's expandable row + explanation behavior (Recommended)**, restyled
   with brand tokens and rendered within the TanStack row model.
 - **(B) Replace expansion with reference-style colored score bubbles + modals.**
@@ -140,7 +153,9 @@ clickable score cells/buttons that open modals. The request says keep Lite
 
 ### Answer
 
+I prefer option B.
 
+No need for expandable rows. Let's just make sure the scores, state, approval, article description is all clcikable to display a modal that will show the addional content, such as the article descripiton or scraped article and the reasoning from the LLM for score or assignment. Make
 
 ---
 
@@ -148,6 +163,7 @@ clickable score cells/buttons that open modals. The request says keep Lite
 
 The request says keep Lite's columns: **Title, Source, Description, Location Score,
 Assigned State, Semantic Score, AI Approval Status**. Please confirm:
+
 - Keep this exact column set and order? (Recommended: yes.)
 - Render Location Score / Semantic Score as the reference's circular colored
   percentage bubbles (green-scale), or keep Lite's existing `ScoreBubble` look?
@@ -158,7 +174,7 @@ Assigned State, Semantic Score, AI Approval Status**. Please confirm:
 
 ### Answer
 
-
+The column order is godo and the columns are correct. Change the column name "Assigned State" to "AI Assigned State". The colors are ok, but I prefer to match the existing NewsNexus12/portal better since the light / dark themes already go with those colors. I just need to make sure the colors have enough contrast.
 
 ---
 
@@ -167,12 +183,14 @@ Assigned State, Semantic Score, AI Approval Status**. Please confirm:
 The reference relies on a large `@theme` token block (brand/gray/success/error/
 warning scales, theme shadows, Outfit font) plus a `ThemeContext` + `.dark` class +
 `ThemeToggleButton`. To get "same colors" and dark/light theme in Lite we need to:
+
 - Port the brand + supporting color tokens and `@custom-variant dark` into Lite's
   `globals.css` (replacing the current bespoke CSS variables).
 - Add a `ThemeProvider` (localStorage-persisted) and a visible toggle control.
 - Optionally adopt the Outfit font.
 
 Questions:
+
 - Port the **full** TailAdmin token set (Recommended, for exact color parity), or a
   **minimal subset** (brand + gray + status colors only)?
 - Where should the theme toggle live in the Lite UI? The Lite portal has a
@@ -182,7 +200,12 @@ Questions:
 
 ### Answer
 
+Let's have a RightSidebar and a top bar header wiht the NewsNexus logo - use portal/public/images/logoAndNameRound.png from the NewsNexus12 project.
+Use:
 
+- Port the **full** TailAdmin token set
+- include top bar
+- adopt Outfit font
 
 ---
 
@@ -193,14 +216,13 @@ has `RightSidebar`, `OrchestrationPanel`, `FirstLaunchModal`, `ToastArea`, and t
 two `/prompts/*` pages — all currently using the bespoke CSS. If we replace
 `globals.css` tokens with the TailAdmin system, those surfaces will lose their
 current styling unless they are migrated too.
+
 - **(A) Restyle the whole portal chrome to TailAdmin (Recommended for consistency):**
   larger effort, single coherent look, no orphaned bespoke CSS.
 - **(B) Restyle only the form + table; keep the rest on the existing CSS:** smaller
   effort, but two visual systems coexist and shared globals must be kept side-by-side.
 
 ### Answer
-
-
 
 ---
 
@@ -211,6 +233,7 @@ the reference's `Label`, `Input`, `Button`, `Modal`, `LoadingDots`,
 `ColumnVisibilityDropdown` primitives. The reference forbids runtime coupling to
 NewsNexus12, but **copying** component source is allowed under the demo's isolation
 rules.
+
 - **(A) Copy/vendor the needed UI primitives into Lite (Recommended)** so Lite stays
   self-contained, adjusting imports.
 - **(B) Build slimmer Lite-specific equivalents** matching the visual style.
@@ -218,13 +241,14 @@ rules.
 
 ### Answer
 
-
+- copy as much from NewsNexus12 to make this look the same. Do not share anything from NewNeuxs12 so the Lite project is self contained.
 
 ---
 
 ## 9. Anything explicitly out of scope?
 
 Please confirm these are **out of scope** for this revamp (Recommended: yes to all):
+
 - Backend/API changes to `/api/rss/search` or the pipeline.
 - Changing demo constraints (no-login, 10-article cap, rate limits).
 - Restyling/altering the `/prompts/*` page **behavior** (styling-only migration is
@@ -232,4 +256,6 @@ Please confirm these are **out of scope** for this revamp (Recommended: yes to a
 
 ### Answer
 
+Let's rename the "Orchestration" section to "Analysis Pipeline".
 
+Make sure the "Analysis Pipeline" section stays to the right of hte form and table. When the RightSidebar is open the sidebar can overlap hte "Analysis Pipeline" section.
