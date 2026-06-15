@@ -63,6 +63,9 @@ export const uiSlice = createSlice({
     dismissToast: (state, action: PayloadAction<string>) => {
       state.toasts = state.toasts.filter((toast) => toast.id !== action.payload);
     },
+    closeResponsiveSidebar: (state) => {
+      state.isResponsiveSidebarOpen = false;
+    },
     toggleResponsiveSidebar: (state) => {
       state.isResponsiveSidebarOpen = !state.isResponsiveSidebarOpen;
     }
@@ -75,6 +78,7 @@ export const {
   closeDescriptionModal,
   closeExplanationModal,
   closeFirstLaunchModal,
+  closeResponsiveSidebar,
   dismissToast,
   openDescriptionModal,
   openExplanationModal,

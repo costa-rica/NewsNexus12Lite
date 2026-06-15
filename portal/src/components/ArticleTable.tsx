@@ -61,6 +61,18 @@ function canOpenExplanation(status: StageStatus) {
   return status !== "pending" && status !== "running" && status !== "skipped";
 }
 
+function responsiveColumnClass(columnId: string) {
+  const classes: Record<string, string> = {
+    description: "hidden 2xl:table-cell",
+    approvalStatus: "hidden xl:table-cell",
+    semanticScore: "hidden lg:table-cell",
+    assignedState: "hidden md:table-cell",
+    locationScore: "hidden sm:table-cell"
+  };
+
+  return classes[columnId] ?? "";
+}
+
 export function ArticleTable() {
   const dispatch = useAppDispatch();
   const { items, lastSearchHadResults } = useAppSelector((state) => state.articles);
@@ -81,11 +93,11 @@ export function ArticleTable() {
       columnHelper.accessor("title", {
         header: "Title",
         cell: ({ row, getValue }) => (
-          <div className="flex min-w-[220px] items-start gap-2">
+          <div className="flex min-w-0 items-start gap-2">
             <Badge color={rowStatusColor(row.original.rowStatus)} size="sm">
               {row.original.rowStatus}
             </Badge>
-            <span className="font-medium text-gray-800 dark:text-white/90">{getValue()}</span>
+            <span className="min-w-0 font-medium text-gray-800 dark:text-white/90">{getValue()}</span>
           </div>
         )
       }),
@@ -211,7 +223,7 @@ export function ArticleTable() {
         />
       </div>
       <div className="custom-scrollbar overflow-x-auto">
-        <table className="min-w-[1040px] w-full border-collapse">
+        <table className="w-full table-fixed border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-800">
@@ -220,7 +232,10 @@ export function ArticleTable() {
                   return (
                     <th
                       key={header.id}
-                      className="px-4 py-3 text-left text-theme-xs font-semibold uppercase text-gray-500 dark:text-gray-400"
+                      className={cn(
+                        "px-3 py-3 text-left text-theme-xs font-semibold uppercase text-gray-500 dark:text-gray-400 sm:px-4",
+                        responsiveColumnClass(header.column.id)
+                      )}
                     >
                       <button
                         className={cn("inline-flex items-center gap-1", header.column.getCanSort() && "hover:text-brand-500")}
@@ -240,7 +255,10 @@ export function ArticleTable() {
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id} className="border-b border-gray-100 last:border-0 dark:border-gray-800">
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-4 align-top text-theme-sm">
+                  <td
+                    key={cell.id}
+                    className={cn("break-words px-3 py-4 align-top text-theme-sm sm:px-4", responsiveColumnClass(cell.column.id))}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

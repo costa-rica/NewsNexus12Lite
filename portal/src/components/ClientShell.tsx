@@ -27,7 +27,7 @@ function ShellContent({ children }: { children: ReactNode }) {
     <ThemeProvider>
       <InitSession />
       <TopBar />
-      <main className="min-h-[calc(100vh-4rem)] px-4 py-6 lg:pr-[220px] xl:px-6">{children}</main>
+      <main className="min-h-[calc(100vh-4rem)] px-4 py-6 xl:px-6">{children}</main>
       <RightSidebar />
       <FirstLaunchModal />
       <DescriptionModal />
