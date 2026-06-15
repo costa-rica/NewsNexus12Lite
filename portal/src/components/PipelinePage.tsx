@@ -6,8 +6,8 @@ import { RssSearchForm } from "@/components/RssSearchForm";
 
 export function PipelinePage() {
   return (
-    <div className="page-grid">
-      <section className="stack">
+    <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <section className="grid min-w-0 gap-5">
         <RssSearchForm />
         <ArticleTable />
       </section>
