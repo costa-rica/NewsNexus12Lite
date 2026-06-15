@@ -5,6 +5,8 @@ import type { ScoreExplanation, Toast } from "@/types";
 interface UiState {
   sidebarRoute: string;
   isFirstLaunchModalOpen: boolean;
+  isExplanationModalOpen: boolean;
+  descriptionModalArticleId: string | null;
   selectedExplanation: ScoreExplanation | null;
   toasts: Toast[];
   isResponsiveSidebarOpen: boolean;
@@ -13,6 +15,8 @@ interface UiState {
 const initialState: UiState = {
   sidebarRoute: "/",
   isFirstLaunchModalOpen: false,
+  isExplanationModalOpen: false,
+  descriptionModalArticleId: null,
   selectedExplanation: null,
   toasts: [],
   isResponsiveSidebarOpen: false
@@ -30,6 +34,19 @@ export const uiSlice = createSlice({
     },
     closeFirstLaunchModal: (state) => {
       state.isFirstLaunchModalOpen = false;
+    },
+    openExplanationModal: (state) => {
+      state.isExplanationModalOpen = true;
+    },
+    closeExplanationModal: (state) => {
+      state.isExplanationModalOpen = false;
+      state.selectedExplanation = null;
+    },
+    openDescriptionModal: (state, action: PayloadAction<string>) => {
+      state.descriptionModalArticleId = action.payload;
+    },
+    closeDescriptionModal: (state) => {
+      state.descriptionModalArticleId = null;
     },
     setSelectedExplanation: (state, action: PayloadAction<ScoreExplanation>) => {
       state.selectedExplanation = action.payload;
@@ -55,8 +72,12 @@ export const uiSlice = createSlice({
 export const {
   addToast,
   clearSelectedExplanation,
+  closeDescriptionModal,
+  closeExplanationModal,
   closeFirstLaunchModal,
   dismissToast,
+  openDescriptionModal,
+  openExplanationModal,
   openFirstLaunchModal,
   setSelectedExplanation,
   setSidebarRoute,

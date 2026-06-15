@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { Button } from "@/components/ui/button/Button";
+import { Modal } from "@/components/ui/modal/Modal";
 import { apiClient } from "@/lib/apiClient";
 import { useAppDispatch, useAppSelector } from "@/hooks/store";
 import { clearArticles } from "@/store/articlesSlice";
@@ -35,21 +37,23 @@ export function FirstLaunchModal() {
   }
 
   return (
-    <div className="modal-backdrop" role="presentation">
-      <section className="modal" role="dialog" aria-modal="true" aria-labelledby="first-launch-title">
-        <div className="stack">
-          <h1 id="first-launch-title">Is this your first time?</h1>
-          <p>Start with a clean demo, or continue this session.</p>
-          <div className="row">
-            <button ref={firstButtonRef} className="btn primary" type="button" onClick={() => void choose(true)}>
-              Yes, reset demo
-            </button>
-            <button className="btn" type="button" onClick={() => void choose(false)}>
-              No, continue
-            </button>
-          </div>
+    <Modal isOpen={!answered} onClose={() => void choose(false)} titleId="first-launch-title" className="max-w-md">
+      <div className="grid gap-5 p-6 pr-14">
+        <div>
+          <h1 id="first-launch-title" className="text-title-sm font-semibold text-gray-900 dark:text-white">
+            Is this your first time?
+          </h1>
+          <p className="mt-2 text-theme-sm text-gray-500 dark:text-gray-400">Start with a clean demo, or continue this session.</p>
         </div>
-      </section>
-    </div>
+        <div className="flex flex-wrap gap-3">
+          <Button ref={firstButtonRef} type="button" onClick={() => void choose(true)}>
+            Yes, reset demo
+          </Button>
+          <Button variant="outline" type="button" onClick={() => void choose(false)}>
+            No, continue
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 }
